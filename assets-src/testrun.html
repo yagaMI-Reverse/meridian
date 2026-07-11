@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1640px; height:1164px; background:#05070e; color:#c4d2de; font-family:'JetBrains Mono',monospace; overflow:hidden; }
+  .wrap { padding:56px 76px; height:100%; display:flex; flex-direction:column; }
+  .head { display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+  .mark { width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg,#34d399,#0ea571); display:flex; align-items:center; justify-content:center; }
+  .mark svg { width:22px; height:22px; }
+  .head b { font-family:'Space Grotesk'; font-size:22px; font-weight:700; letter-spacing:.14em; color:#eef2f7; }
+  .head span { font-size:13px; color:#5f7189; margin-left:6px; }
+  .term { flex:1; background:#070b14; border:1px solid #16223a; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 24px 70px rgba(0,0,0,.5); }
+  .bar { display:flex; align-items:center; gap:8px; padding:15px 20px; border-bottom:1px solid #131e33; background:#0a101d; }
+  .dot { width:12px; height:12px; border-radius:50%; }
+  .title { margin-left:10px; font-size:13px; color:#5f7189; }
+  pre { flex:1; padding:26px 30px; font-size:17.5px; line-height:1.72; white-space:pre-wrap; }
+  .caret { display:inline-block; width:9px; height:20px; background:#34d399; vertical-align:-3px; animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .g { color:#34d399; font-weight:600; } .w { color:#eef2f7; } .d { color:#4c5f74; } .y { color:#f5b04c; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#05070e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 12h16M20 5v14"/></svg></div>
+    <b>MERIDIAN</b><span>multi-tenant billing ledger API — the test suite runs against a REAL PostgreSQL, no mocks</span>
+  </div>
+  <div class="term">
+    <div class="bar">
+      <div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#febc2e"></div><div class="dot" style="background:#28c840"></div>
+      <div class="title">powershell — 29-meridian</div>
+    </div>
+    <pre id="out"></pre>
+  </div>
+</div>
+<script>
+const LINES = [
+  ['w','$ npm run test:e2e', 400],
+  ['d','', 80],
+  ['d','> meridian@1.0.0 test:e2e — booting a FRESH PostgreSQL 18 cluster…', 700],
+  ['d','> prisma migrate deploy: 2 migrations applied (RLS policies + append-only trigger)', 900],
+  ['d','', 150],
+  ['g','PASS  test/auth.e2e-spec.ts            — JWT · RBAC · 401/403 (8 tests)', 320],
+  ['g','PASS  test/idempotency.e2e-spec.ts    — replay · 422 mismatch · per-tenant keys (4)', 320],
+  ['g','PASS  test/accounts.e2e-spec.ts       — validation · ledger paging · RBAC (8)', 320],
+  ['g','PASS  test/subscriptions.e2e-spec.ts  — subscription + first charge, atomic (4)', 320],
+  ['g','PASS  test/isolation.e2e-spec.ts      — RLS + append-only (8)', 260],
+  ['w','   ✓ raw SQL under tenant B sees only its own rows', 200],
+  ['w','   ✓ UPDATE ledger_entries as app role  → permission denied', 200],
+  ['w','   ✓ UPDATE ledger_entries as SUPERUSER → trigger: append-only', 300],
+  ['g','PASS  test/concurrency.e2e-spec.ts    — the money shot (3)', 260],
+  ['w','   ✓ 25 unique payments, each fired TWICE concurrently (50 in flight)', 240],
+  ['y','       → exactly 25 ledger entries · balance == SUM(ledger) · ±0¢', 340],
+  ['w','   ✓ mixed credits + adjustments interleaved concurrently', 220],
+  ['w','   ✓ reconciliation catches a manufactured 777¢ drift', 380],
+  ['d','', 150],
+  ['w','Test Suites: 6 passed, 6 total', 220],
+  ['w','Tests:       34 passed, 34 total   (+16 unit)', 220],
+  ['w','Time:        7.7 s — against a real database', 200],
+];
+const out = document.getElementById('out');
+window.__done = false;
+window.__start = async () => {
+  for (const [cls, text, pause] of LINES){
+    const span = document.createElement('span');
+    span.className = cls;
+    span.textContent = text + '\n';
+    out.appendChild(span);
+    await new Promise(r => setTimeout(r, pause));
+  }
+  const c = document.createElement('span'); c.className = 'caret'; out.appendChild(c);
+  window.__done = true;
+};
+</script>
+</body>
+</html>
