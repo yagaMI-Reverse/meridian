@@ -1,0 +1,11 @@
+name: keep-warm
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health (keeps Render + Neon free tiers awake)
+        run: curl -sf --max-time 60 https://meridian-api-qvwb.onrender.com/health

@@ -1,5 +1,7 @@
 # Meridian — Multi-Tenant Billing Ledger API
 
+**Live demo:** [meridian-api-qvwb.onrender.com/docs](https://meridian-api-qvwb.onrender.com/docs) — Swagger UI against a real Neon PostgreSQL with RLS enforced (free tier; a cold start can take ~1 min). Login with the demo credentials below, hit *Authorize*, and try retrying a payment with the same `Idempotency-Key`.
+
 A financial-grade billing backend in **NestJS + Prisma + PostgreSQL**: append-only ledger,
 idempotent money movements, row-level-security tenant isolation, and a reconciliation job
 that continuously proves the books balance.
