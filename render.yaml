@@ -1,0 +1,22 @@
+# One-click deploy: https://render.com/deploy?repo=https://github.com/yagaMI-Reverse/meridian
+# Database lives on Neon (free tier) — paste both URLs when the blueprint asks.
+services:
+  - type: web
+    name: meridian-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npx prisma generate && npm run build
+    # migrate + seed are idempotent — safe on every boot
+    startCommand: npx prisma migrate deploy && npx prisma db seed && node dist/src/main.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: DATABASE_URL
+        sync: false # Neon owner role (migrations, seed, system jobs)
+      - key: APP_DATABASE_URL
+        sync: false # meridian_app least-privilege role (request path, RLS enforced)
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SEED_ADMIN_PASSWORD
+        value: demo-password
