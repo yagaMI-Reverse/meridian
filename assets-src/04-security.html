@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1640px; height:1164px; overflow:hidden; background:#05070e; color:#f0f4f8; font-family:'Inter',sans-serif; position:relative; }
+  body::before { content:''; position:absolute; inset:0;
+    background:radial-gradient(800px 480px at 15% -10%, rgba(52,211,153,.12), transparent 65%); }
+  .wrap { position:relative; z-index:2; padding:52px 80px; height:100%; display:flex; flex-direction:column; }
+  .brandrow { display:flex; align-items:center; justify-content:space-between; margin-bottom:36px; }
+  .brand { display:flex; align-items:center; gap:14px; }
+  .mark { width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg,#34d399,#0ea571); display:flex; align-items:center; justify-content:center; }
+  .mark svg { width:22px; height:22px; }
+  .brand-name { font-family:'Space Grotesk'; font-weight:700; font-size:22px; letter-spacing:.14em; }
+  .pill { font-family:'JetBrains Mono'; font-size:13px; color:#34d399; border:1px solid rgba(52,211,153,.35); background:rgba(52,211,153,.07); padding:8px 16px; border-radius:999px; letter-spacing:.08em; }
+  h1 { font-family:'Space Grotesk'; font-weight:700; font-size:58px; letter-spacing:-.01em; }
+  h1 .accent { color:#34d399; }
+  .sub { margin-top:14px; font-size:20px; color:#8fa3b8; }
+  .cols { display:grid; grid-template-columns:1.05fr .95fr; gap:28px; margin-top:32px; flex:1; min-height:0; }
+  .panel { background:#0a101d; border:1px solid #16223a; border-radius:16px; padding:28px 30px; display:flex; flex-direction:column; }
+  .panel h3 { font-family:'JetBrains Mono'; font-size:14px; font-weight:600; color:#5f7183; letter-spacing:.14em; margin-bottom:18px; }
+  pre { font-family:'JetBrains Mono'; font-size:16.5px; line-height:1.62; color:#c4d2de; white-space:pre; }
+  .c-kw { color:#34d399; font-weight:600; }
+  .c-str { color:#f5b04c; }
+  .c-cm { color:#4c5f74; }
+  .proof { display:flex; flex-direction:column; gap:13px; }
+  .row { display:flex; align-items:center; gap:16px; background:#0d1424; border:1px solid #16223a; border-radius:12px; padding:13px 20px; }
+  .row .what { font-family:'JetBrains Mono'; font-size:15.5px; color:#c4d2de; flex:1; line-height:1.45; }
+  .row .res { font-family:'JetBrains Mono'; font-size:14px; font-weight:600; padding:7px 14px; border-radius:8px; white-space:nowrap; }
+  .res.blocked { color:#fca5a5; background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); }
+  .res.ok { color:#34d399; background:rgba(52,211,153,.09); border:1px solid rgba(52,211,153,.3); }
+  .roles { margin-top:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .role { background:#0d1424; border:1px solid #16223a; border-radius:12px; padding:16px 18px; }
+  .role .n { font-family:'JetBrains Mono'; font-size:15px; font-weight:600; color:#34d399; }
+  .role .d { font-size:13.5px; color:#8fa3b8; margin-top:6px; line-height:1.5; }
+  .footer { margin-top:24px; display:flex; justify-content:space-between; border-top:1px solid #131e33; padding-top:18px; padding-bottom:4px; }
+  .note { font-size:14px; color:#5f7183; font-family:'JetBrains Mono'; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brandrow">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#05070e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 12h16M20 5v14"/></svg></div>
+      <div class="brand-name">MERIDIAN</div>
+    </div>
+    <div class="pill">TENANT ISOLATION · ROW-LEVEL SECURITY</div>
+  </div>
+
+  <h1>Every query is tenant-scoped.<br><span class="accent">Even raw SQL.</span></h1>
+  <div class="sub">The API connects as a least-privilege role. Policies live in the database — the app can't forget them.</div>
+
+  <div class="cols">
+    <div class="panel">
+      <h3>MIGRATION — POLICIES & APPEND-ONLY TRIGGER</h3>
+      <pre><span class="c-cm">-- tenant id comes from the verified JWT, set per transaction</span>
+<span class="c-kw">CREATE POLICY</span> tenant_isolation <span class="c-kw">ON</span> ledger_entries
+  <span class="c-kw">USING</span> (tenant_id = current_setting(<span class="c-str">'app.tenant_id'</span>, true)::uuid);
+
+<span class="c-cm">-- unset GUC → NULL → matches nothing. Deny by default.</span>
+
+<span class="c-kw">CREATE ROLE</span> meridian_app <span class="c-kw">LOGIN</span>
+  NOSUPERUSER NOBYPASSRLS;
+<span class="c-kw">GRANT SELECT, INSERT ON</span> ledger_entries <span class="c-kw">TO</span> meridian_app;
+<span class="c-cm">-- note: no UPDATE, no DELETE. Ever.</span>
+
+<span class="c-kw">CREATE TRIGGER</span> ledger_entries_append_only
+  <span class="c-kw">BEFORE UPDATE OR DELETE ON</span> ledger_entries
+  <span class="c-kw">FOR EACH ROW EXECUTE FUNCTION</span>
+    meridian_forbid_ledger_mutation();</pre>
+      <div class="roles">
+        <div class="role"><div class="n">meridian_app</div><div class="d">request path · RLS enforced · least privilege · tenant GUC required</div></div>
+        <div class="role"><div class="n">system role</div><div class="d">migrations, seeds, cross-tenant reconciliation · never serves tenant requests</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>PROVEN IN THE E2E SUITE — REAL POSTGRESQL</h3>
+      <div class="proof">
+        <div class="row"><div class="what">Tenant B requests tenant A's account</div><div class="res blocked">404 — invisible</div></div>
+        <div class="row"><div class="what">Raw <b>SELECT COUNT(*)</b> under tenant B context</div><div class="res ok">only B's rows</div></div>
+        <div class="row"><div class="what">Same query with <b>no tenant context</b> set</div><div class="res blocked">0 rows</div></div>
+        <div class="row"><div class="what">INSERT with a <b>foreign tenant_id</b></div><div class="res blocked">RLS rejects</div></div>
+        <div class="row"><div class="what">UPDATE ledger_entries as app role</div><div class="res blocked">permission denied</div></div>
+        <div class="row"><div class="what">UPDATE ledger_entries as <b>superuser</b></div><div class="res blocked">trigger: append-only</div></div>
+        <div class="row"><div class="what">Reused Idempotency-Key, different payload</div><div class="res blocked">422 rejected</div></div>
+        <div class="row"><div class="what">Retry with same key + same payload</div><div class="res ok">replayed, 1 entry</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="note">security lives in PostgreSQL — grants + RLS + triggers, tested end-to-end</div>
+    <div class="note">meridian · multi-tenant billing ledger API</div>
+  </div>
+</div>
+</body>
+</html>

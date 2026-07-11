@@ -1,0 +1,19 @@
+# build
+/dist
+/node_modules
+/coverage
+
+# local postgres clusters (embedded-postgres)
+/.pgdata
+/.pgdata-test
+
+# env
+.env
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

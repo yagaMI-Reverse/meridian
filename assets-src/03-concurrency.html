@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1640px; height:1164px; overflow:hidden; background:#05070e; color:#f0f4f8; font-family:'Inter',sans-serif; position:relative; }
+  body::before { content:''; position:absolute; inset:0;
+    background:radial-gradient(900px 500px at 85% 110%, rgba(52,211,153,.12), transparent 65%); }
+  .wrap { position:relative; z-index:2; padding:64px 80px; height:100%; display:flex; flex-direction:column; }
+  .brandrow { display:flex; align-items:center; justify-content:space-between; margin-bottom:44px; }
+  .brand { display:flex; align-items:center; gap:14px; }
+  .mark { width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg,#34d399,#0ea571); display:flex; align-items:center; justify-content:center; }
+  .mark svg { width:22px; height:22px; }
+  .brand-name { font-family:'Space Grotesk'; font-weight:700; font-size:22px; letter-spacing:.14em; }
+  .pill { font-family:'JetBrains Mono'; font-size:13px; color:#34d399; border:1px solid rgba(52,211,153,.35); background:rgba(52,211,153,.07); padding:8px 16px; border-radius:999px; letter-spacing:.08em; }
+  h1 { font-family:'Space Grotesk'; font-weight:700; font-size:64px; letter-spacing:-.01em; }
+  h1 .accent { color:#34d399; }
+  .sub { margin-top:14px; font-size:20px; color:#8fa3b8; max-width:1200px; line-height:1.5; }
+  .cols { display:grid; grid-template-columns:.92fr 1.08fr; gap:28px; margin-top:38px; flex:1; }
+  .steps { display:flex; flex-direction:column; gap:14px; }
+  .step { background:#0a101d; border:1px solid #16223a; border-radius:14px; padding:20px 22px; display:flex; gap:18px; }
+  .num { font-family:'JetBrains Mono'; font-weight:600; font-size:15px; color:#34d399; background:rgba(52,211,153,.08);
+    border:1px solid rgba(52,211,153,.3); width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex:none; }
+  .step .t { font-family:'Space Grotesk'; font-weight:600; font-size:19px; }
+  .step .d { margin-top:5px; font-size:15px; color:#8fa3b8; line-height:1.5; }
+  .step .d code { font-family:'JetBrains Mono'; font-size:13.5px; color:#c4d2de; background:#0d1424; padding:2px 7px; border-radius:5px; }
+  .stats { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+  .stat { background:#0a101d; border:1px solid #16223a; border-radius:14px; padding:18px 22px; }
+  .stat .v { font-family:'JetBrains Mono'; font-weight:600; font-size:34px; color:#34d399; }
+  .stat .k { margin-top:4px; font-size:14px; color:#8fa3b8; }
+  .term { background:#070b14; border:1px solid #16223a; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 24px 70px rgba(0,0,0,.5); }
+  .term-head { display:flex; align-items:center; gap:8px; padding:16px 20px; border-bottom:1px solid #131e33; background:#0a101d; }
+  .dot { width:12px; height:12px; border-radius:50%; }
+  .term-title { margin-left:10px; font-family:'JetBrains Mono'; font-size:13.5px; color:#5f7183; }
+  .term-body { padding:24px 28px; font-family:'JetBrains Mono'; font-size:16.5px; line-height:1.85; color:#c4d2de; }
+  .p { color:#34d399; font-weight:600; }
+  .dim { color:#4c5f74; }
+  .wht { color:#e8eef4; }
+  .sum { border-top:1px solid #131e33; margin-top:14px; padding-top:16px; }
+  .footer { margin-top:26px; display:flex; justify-content:space-between; border-top:1px solid #131e33; padding-top:22px; }
+  .note { font-size:14px; color:#5f7183; font-family:'JetBrains Mono'; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brandrow">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#05070e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 12h16M20 5v14"/></svg></div>
+      <div class="brand-name">MERIDIAN</div>
+    </div>
+    <div class="pill">CONCURRENCY PROOF · REAL POSTGRESQL, NO MOCKS</div>
+  </div>
+
+  <h1>50 concurrent requests.<br>25 racing retries. <span class="accent">Zero drift.</span></h1>
+  <div class="sub">Every payment is fired twice, simultaneously — the retry races the original. Row locks + transactional idempotency make the outcome exact, not approximate.</div>
+
+  <div class="cols">
+    <div>
+      <div class="steps">
+        <div class="step"><div class="num">1</div><div><div class="t">Fire the storm</div><div class="d">25 unique payments, each sent <b>2× in parallel</b> with the same <code>Idempotency-Key</code> — 50 requests in flight at once.</div></div></div>
+        <div class="step"><div class="num">2</div><div><div class="t">Postgres referees the race</div><div class="d">Duplicate blocks on the unique index until the original commits, then replays its stored response. <code>SELECT … FOR UPDATE</code> queues writers per account.</div></div></div>
+        <div class="step"><div class="num">3</div><div><div class="t">Audit in SQL, not in hope</div><div class="d">Balance vs <code>SUM(ledger_entries)</code> compared straight in the database, then a reconciliation sweep confirms it.</div></div></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="v">25 / 25</div><div class="k">ledger entries — not one duplicate</div></div>
+        <div class="stat"><div class="v">±0¢</div><div class="k">balance == SUM(ledger), to the cent</div></div>
+        <div class="stat"><div class="v">50×201</div><div class="k">every retry got the original response</div></div>
+        <div class="stat"><div class="v">drift: 0</div><div class="k">reconciliation sweep after the storm</div></div>
+      </div>
+    </div>
+
+    <div class="term">
+      <div class="term-head">
+        <div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#febc2e"></div><div class="dot" style="background:#28c840"></div>
+        <div class="term-title">npm run test:e2e — fresh PostgreSQL 18 + real migrations per run</div>
+      </div>
+      <div class="term-body">
+        <div><span class="p">PASS</span> <span class="wht">test/concurrency.e2e-spec.ts</span></div>
+        <div class="dim">Concurrency: balance never drifts (e2e)</div>
+        <div><span class="p">✓</span> 25 unique payments, each fired TWICE concurrently</div>
+        <div class="dim">&nbsp;&nbsp;→ exactly 25 entries, balance == SUM(ledger)</div>
+        <div><span class="p">✓</span> mixed credits + adjustments interleaved concurrently</div>
+        <div><span class="p">✓</span> reconciliation catches a manufactured 777¢ drift</div>
+        <div style="margin-top:10px"><span class="p">PASS</span> <span class="wht">test/isolation.e2e-spec.ts</span> <span class="dim">— RLS + append-only (8)</span></div>
+        <div><span class="p">PASS</span> <span class="wht">test/idempotency.e2e-spec.ts</span> <span class="dim">— replay / 422 / per-tenant (4)</span></div>
+        <div><span class="p">PASS</span> <span class="wht">test/subscriptions.e2e-spec.ts</span> <span class="dim">— atomic create+charge (4)</span></div>
+        <div><span class="p">PASS</span> <span class="wht">test/accounts.e2e-spec.ts</span> <span class="dim">— validation / paging / RBAC (8)</span></div>
+        <div><span class="p">PASS</span> <span class="wht">test/auth.e2e-spec.ts</span> <span class="dim">— JWT / RBAC / 401·403 (8)</span></div>
+        <div class="sum">
+          <div><span class="wht">Test Suites:</span> <span class="p">6 passed</span>, 6 total</div>
+          <div><span class="wht">Tests:</span> <span class="p">34 passed</span>, 34 total <span class="dim">(+16 unit)</span></div>
+          <div><span class="wht">Time:</span> 7.7 s <span class="dim">against a real database</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="note">the exact failure mode fintech teams screen for — answered with a green build</div>
+    <div class="note">meridian · multi-tenant billing ledger API</div>
+  </div>
+</div>
+</body>
+</html>
