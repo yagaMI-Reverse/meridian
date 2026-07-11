@@ -17,7 +17,8 @@
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'meridian_app') THEN
-    CREATE ROLE meridian_app LOGIN PASSWORD 'app_password'
+    -- password must satisfy managed-Postgres strength checks (Neon rejects weak ones)
+    CREATE ROLE meridian_app LOGIN PASSWORD 'M3ridian.App.R0le.2026'
       NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS;
   END IF;
 END

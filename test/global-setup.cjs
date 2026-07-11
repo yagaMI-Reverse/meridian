@@ -33,6 +33,6 @@ module.exports = async function globalSetup() {
 
   // Test workers inherit these; they take precedence over .env values.
   process.env.DATABASE_URL = `${systemUrl}?connection_limit=5`;
-  process.env.APP_DATABASE_URL = `postgresql://meridian_app:app_password@localhost:${PORT}/${DB}?connection_limit=5`;
+  process.env.APP_DATABASE_URL = `postgresql://meridian_app:M3ridian.App.R0le.2026@localhost:${PORT}/${DB}?connection_limit=5`;
   process.env.JWT_SECRET = 'e2e-test-secret';
 };
